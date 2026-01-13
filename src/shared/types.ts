@@ -8,9 +8,13 @@ export enum Status {
 
 export interface CommonNode {
   id: number;
+  /** 该节点所属的网络 */
   networkId: number;
+  /** 该节点的名字 alice bob 等 */
   name: string;
+  /** 该节点的网络类型 bitcoin | lightning | tap */
   type: 'bitcoin' | 'lightning' | 'tap';
+  /** 该节点使用的版本 */
   version: string;
   status: Status;
   errorMsg?: string;
@@ -23,6 +27,7 @@ export interface CommonNode {
 export interface LightningNode extends CommonNode {
   type: 'lightning';
   implementation: 'LND' | 'c-lightning' | 'eclair' | 'litd';
+  /** 该节点使用的 比特币节点 的名字，比如同一个比特币节点启了多个实例，名字分别为 backend1 backend2 等 */
   backendName: string;
   ports: Record<string, number | undefined>;
 }

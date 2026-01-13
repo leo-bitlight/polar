@@ -61,6 +61,7 @@ export interface AutoMinerModel {
 }
 
 export interface NetworkModel {
+  /** Current networks */
   networks: Network[];
   networkById: Computed<NetworkModel, (id?: string | number) => Network>;
   setNetworks: Action<NetworkModel, Network[]>;
@@ -141,6 +142,7 @@ export interface NetworkModel {
   start: Thunk<NetworkModel, number, StoreInjections, RootModel, Promise<void>>;
   stop: Thunk<NetworkModel, number, StoreInjections, RootModel, Promise<void>>;
   stopAll: Thunk<NetworkModel, void, StoreInjections, RootModel, Promise<void>>;
+  /** 重启或停止一个网络中的所有节点 */
   toggle: Thunk<NetworkModel, number, StoreInjections, RootModel, Promise<void>>;
   toggleNode: Thunk<NetworkModel, CommonNode, StoreInjections, RootModel, Promise<void>>;
   monitorStartup: Thunk<
@@ -308,6 +310,8 @@ const networkModel: NetworkModel = {
       const { dockerRepoState, computedManagedImages, settings } = getStoreState().app;
       // convert the customNodes object into an array of custom images with counts
       const customImages: { image: CustomImage; count: number }[] = [];
+
+      // customNodes: {nodeId: count}
       Object.entries(payload.customNodes)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, count]) => count > 0)
@@ -315,7 +319,11 @@ const networkModel: NetworkModel = {
           const image = settings.nodeImages.custom.find(i => i.id === id);
           if (image) customImages.push({ image, count });
         });
+
+      // Find the exist id
       const nextId = Math.max(0, ...getState().networks.map(n => n.id)) + 1;
+
+      // 根据用户输入的对象构造 node 数据结构 和 network 数据结构
       const network = createNetwork({
         id: nextId,
         name: payload.name,
@@ -332,15 +340,24 @@ const networkModel: NetworkModel = {
         basePorts: settings.basePorts,
         manualMineCount: 6,
       });
+
+      // Cache a network to memory
       actions.add(network);
+
+      // 拿到刚才提交的 network
       const { networks } = getState();
       const newNetwork = networks[networks.length - 1];
       await injections.dockerService.saveComposeFile(newNetwork);
+
+      // 基于用户输入的镜像信息构建画布
       const chart = initChartFromNetwork(newNetwork);
       getStoreActions().designer.setChart({ id: newNetwork.id, chart });
       getStoreActions().designer.setActiveId(newNetwork.id);
+
+      // 文件形式将网络信息保存到本地
       await actions.save();
 
+      // 更新缓存
       await getStoreActions().app.updateSettings({
         newNodeCounts: {
           LND: payload.lndNodes,
@@ -819,6 +836,7 @@ const networkModel: NetworkModel = {
       }
     }, 2000);
   }),
+
   toggle: thunk(async (actions, networkId, { getState }) => {
     const network = getState().networks.find(n => n.id === networkId);
     if (!network) throw new Error(l('networkByIdErr', { networkId }));
@@ -829,6 +847,7 @@ const networkModel: NetworkModel = {
     }
     await actions.save();
   }),
+
   toggleNode: thunk(async (actions, node, { getState, injections, getStoreActions }) => {
     const { networkId } = node;
     let network = getState().networks.find(n => n.id === networkId);

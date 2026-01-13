@@ -32,9 +32,10 @@ export interface AppModel {
   initialized: boolean;
   settings: AppSettings;
   dockerVersions: DockerVersions;
-  // images that have been pulled/downloaded from Docker Hub
+  /** 已经下载到 docker host 的镜像 */
   dockerImages: string[];
   // all images that are available on Docker Hub
+  /** 写死的镜像详细信息， 检查更新时 REPO_STATE_URL 获取的信息会覆盖这个值 */
   dockerRepoState: DockerRepoState;
   computedManagedImages: Computed<AppModel, ManagedImage[]>;
   setInitialized: Action<AppModel, boolean>;
@@ -104,11 +105,14 @@ const appModel: AppModel = {
   dockerRepoState: defaultRepoState,
   // computed properties
   computedManagedImages: computed(state => {
-    // the list of managed nodes should be computed to merge the user-defined
-    // commands with the hard-coded nodes
+    // 保存每个镜像 及其 所有版本
     const nodes: ManagedImage[] = [];
     const { managed } = state.settings.nodeImages;
+
+    // 遍历默认的景象配置
     Object.entries(state.dockerRepoState.images).forEach(([type, entry]) => {
+      // type 镜像名
+      // entry 镜像配置
       entry.versions.forEach(version => {
         // search for a custom command saved in settings
         const m = managed.find(n => n.implementation === type && n.version === version);

@@ -178,6 +178,8 @@ const OpenChannelModal: React.FC<Props> = ({ network }) => {
           }
         />
       )}
+
+      {/* 容量 */}
       <Form.Item
         name="capacity"
         label={l('capacityLabel')}

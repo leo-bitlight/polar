@@ -49,7 +49,20 @@ const NewNetwork: React.FC = () => {
 
   const createAsync = useAsyncCallback(async (values: any) => {
     try {
+      // {
+      //     "name": "t",
+      //     "description": "t",
+      //     "lndNodes": 1,
+      //     "clightningNodes": 0,
+      //     "eclairNodes": 0,
+      //     "bitcoindNodes": 1,
+      //     "tapdNodes": 0,
+      //     "litdNodes": 0,
+      //     "customNodes": {}
+      // }
       values.customNodes = values.customNodes || {};
+      // console.log(values);
+      // return;
 
       if (values.tapdNodes > values.lndNodes) {
         throw new Error(l('tapdCountError'));
@@ -103,6 +116,8 @@ const NewNetwork: React.FC = () => {
           >
             <Input placeholder={l('namePhlDescription')} />
           </Form.Item>
+
+          {/* 自定义 比特币 节点 */}
           {customNodes.length > 0 && (
             <>
               <Styled.Divider orientation="left">{l('customLabel')}</Styled.Divider>

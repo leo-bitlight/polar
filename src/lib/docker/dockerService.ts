@@ -128,7 +128,7 @@ class DockerService implements DockerLibrary {
   }
 
   /**
-   * Save a docker-compose.yml file for the given network
+   * 把网络中镜像信息保存为 docker-compose.yml 文件
    * @param network the network to save a compose file for
    */
   async saveComposeFile(network: Network) {
@@ -136,6 +136,7 @@ class DockerService implements DockerLibrary {
     const { bitcoin, lightning, tap } = network.nodes;
 
     bitcoin.forEach(node => file.addBitcoind(node));
+
     lightning.forEach(node => {
       if (node.implementation === 'LND') {
         const lnd = node as LndNode;

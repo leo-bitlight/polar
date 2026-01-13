@@ -15,7 +15,7 @@ export const delay = (timeout: number) => {
  */
 export const waitFor = async (
   conditionFunc: () => Promise<any>,
-  interval = 500,
+  interval = 1000,
   timeout = 5000,
 ): Promise<any> => {
   try {

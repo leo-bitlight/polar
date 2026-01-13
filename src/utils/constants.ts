@@ -358,8 +358,9 @@ export const REPO_STATE_URL =
   'https://raw.githubusercontent.com/jamaljsr/polar/master/docker/nodes.json';
 
 /**
- * this defines the hard-coded list of docker images available in the Polar app. When new images
- * are pushed to Docker Hub, this list should be updated along with the /docker/nodes.json file.
+ * 默认的所有镜像状态
+ *
+ * 如果从 REPO_STATE_URL 地址获取到最新的镜像信息失败，则会覆盖这个默认值
  */
 export const defaultRepoState: DockerRepoState = {
   version: 77,
@@ -381,6 +382,7 @@ export const defaultRepoState: DockerRepoState = {
         '0.17.5-beta',
         '0.16.4-beta',
       ],
+      // 兼容配置： 闪电网络：bitcoind
       // not all LND versions are compatible with all bitcoind versions.
       // this mapping specifies the highest compatible bitcoind for each LND version
       compatibility: {

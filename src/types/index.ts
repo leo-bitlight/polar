@@ -23,7 +23,9 @@ export interface Network {
   id: number;
   name: string;
   description: string;
+  /** 运行状态 */
   status: Status;
+  /** 该网络的 docker compose yaml 配置文件存放位置 */
   path: string;
   autoMineMode: AutoMineMode;
   nodes: {
@@ -72,9 +74,11 @@ export interface AppSettings {
   lang: string;
   theme: 'light' | 'dark';
   checkForUpdatesOnStartup: boolean;
-  /** lists of docker image customizations */
+  /** 预定义的镜像 lists of docker image customizations */
   nodeImages: {
+    /** 项目写死的一些镜像基本信息 包含启动命令 */
     managed: ManagedImage[];
+    /** 自定义的比特币镜像 */
     custom: CustomImage[];
   };
   /** The default number of each node when creating a new network */
@@ -106,10 +110,12 @@ export interface DockerConfig {
 }
 
 export interface DockerRepoImage {
+  /** 最新的版本 */
   latest: string;
   versions: string[];
   /**
    * a mapping of the image version to the highest compatible bitcoind version
+   * {闪电网络版本： 兼容的比特币版本}
    */
   compatibility?: Record<string, string>;
 }
@@ -119,6 +125,11 @@ export interface DockerRepoState {
    * the version of the repo state file. Used to quickly identify updates
    */
   version: number;
+  /**
+   * docker 仓库已经上传的所有支持的镜像详细信息
+   *
+   * 但是不包含启动命令，启动命令需要使用 `managed` 中的命令
+   */
   images: Record<NodeImplementation, DockerRepoImage>;
 }
 
@@ -130,6 +141,7 @@ export interface DockerRepoUpdates {
 export interface DockerLibrary {
   getVersions: (throwOnError?: boolean) => Promise<DockerVersions>;
   getImages: () => Promise<string[]>;
+  /** 将网络中所有镜像脚本保存成 docker-compose.yml 文件 */
   saveComposeFile: (network: Network) => Promise<void>;
   start: (network: Network) => Promise<void>;
   stop: (network: Network) => Promise<void>;

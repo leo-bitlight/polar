@@ -77,11 +77,16 @@ export const getInvoicePayload = (
   return { source, target, amount };
 };
 
+/**
+ * @param images 按照版本平铺的所有镜像列表
+ * @param implementation 镜像名
+ */
 export const getImageCommand = (
   images: ManagedImage[],
   implementation: NodeImplementation,
   version: string,
 ): string => {
+  // 找到所需的镜像
   const image = images.find(
     i => i.implementation === implementation && i.version === version,
   );
@@ -197,6 +202,7 @@ export const createLndNetworkNode = (
 ): LndNode => {
   const { bitcoin, lightning } = network.nodes;
   const implementation: LndNode['implementation'] = 'LND';
+  // 找到兼容的 比特币节点
   const backends = filterCompatibleBackends(
     implementation,
     version,
@@ -214,6 +220,7 @@ export const createLndNetworkNode = (
     version,
     status,
     // alternate between backend nodes
+    // 用户可能创建 5 个闪电节点 但是兼容的比特币节点可能只有 2 个
     backendName: backends[id % backends.length].name,
     paths: getLndFilePaths(name, network),
     ports: {
@@ -347,6 +354,7 @@ export const createBitcoindNetworkNode = (
   status = Status.Stopped,
   basePort = BasePorts.bitcoind,
 ): BitcoinNode => {
+  // 取出bitcoin 字段，默认是空数组
   const { bitcoin } = network.nodes;
   const id = bitcoin.length ? Math.max(...bitcoin.map(n => n.id)) + 1 : 0;
 
@@ -518,17 +526,22 @@ export const createNetwork = (config: {
       });
     });
 
-  // add managed bitcoin nodes
+  // 处理比特币节点
+  // 基于用户填写的数量，创建对应数量的 node
   range(bitcoindNodes).forEach(() => {
     let version = repoState.images.bitcoind.latest;
+    // 如果用户同时添加了闪电网络节点，那比特币 version 设置为当前闪电网络兼容的版本
     if (lndNodes > 0) {
+      // 闪电网络兼容配置
       const compat = repoState.images.LND.compatibility as Record<string, string>;
+      // 获取闪电网络对英的比特币兼容版本
       const compatibleVersion = compat[repoState.images.LND.latest];
-      // If no compatibility entry exists, fall back to latest bitcoind
+      // 设置兼容版本号
       version = compatibleVersion || version;
     }
     const cmd = getImageCommand(managedImages, 'bitcoind', version);
     bitcoin.push(
+      // 构造节点数据结构
       createBitcoindNetworkNode(
         network,
         version,
@@ -564,7 +577,7 @@ export const createNetwork = (config: {
       });
     });
 
-  // add lightning nodes in an alternating pattern
+  // 构造闪电网络 node
   range(Math.max(lndNodes, clightningNodes, eclairNodes, litdNodes)).forEach(i => {
     if (i < lndNodes) {
       const { latest, compatibility } = repoState.images.LND;
@@ -782,6 +795,8 @@ export interface OpenPorts {
 }
 
 /**
+ * 依次检查 bit节点、lnd 节点、clightning节点、eclair、tapd 节点的端口
+ *
  * Checks if the ports specified on the nodes are available on the host OS. If not,
  * return new ports that are confirmed available
  * @param network the network with nodes to verify ports of
@@ -792,9 +807,12 @@ export const getOpenPorts = async (network: Network): Promise<OpenPorts | undefi
   // filter out nodes that are already started since their ports are in use by themselves
   const bitcoin = network.nodes.bitcoin.filter(n => n.status !== Status.Started);
   if (bitcoin.length) {
+    // 所有 btc 节点的 rpc 端口
     let existingPorts = bitcoin.map(n => n.ports.rpc);
+    // 可用的端口
     let openPorts = await getOpenPortRange(existingPorts);
     if (openPorts.join() !== existingPorts.join()) {
+      // 如果有不能用的端口，那就用可用的端口覆盖
       openPorts.forEach((port, index) => {
         ports[bitcoin[index].name] = { rpc: port };
       });
