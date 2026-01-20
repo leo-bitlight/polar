@@ -51,9 +51,9 @@ const NetworkSetting: React.FC = () => {
           rest: values.LND,
           grpc: values.grpcLND,
         },
-        'r-lightning': {
-          rest: values['r-lightning'],
-          grpc: values['grpcR-lightning'],
+        rustlightning: {
+          rest: values.rustlightning,
+          grpc: '',
         },
         'c-lightning': {
           rest: values['c-lightning'],

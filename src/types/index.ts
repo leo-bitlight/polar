@@ -64,7 +64,7 @@ export interface CustomImage {
  */
 export interface NodeBasePorts {
   LND: { rest: number; grpc: number };
-  'r-lightning': { rest: number; grpc: number };
+  rustlightning: { rest: number; grpc: number };
   'c-lightning': { rest: number; grpc: number };
   eclair: { rest: number };
   bitcoind: { rest: number };

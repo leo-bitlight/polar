@@ -205,7 +205,7 @@ export const simln = (
   ports: [],
 });
 
-export const rlightning = (
+export const rustlightning = (
   name: string,
   container: string,
   image: string,
@@ -220,8 +220,8 @@ export const rlightning = (
   command: trimInside(command),
   restart: 'always',
   volumes: [
-    `./volumes/${dockerConfigs['r-lightning'].volumeDirName}/${name}/${dockerConfigs['r-lightning'].dataDir}:/home/rlightning/.lightning`,
-    `./volumes/${dockerConfigs['r-lightning'].volumeDirName}/${name}/${dockerConfigs['r-lightning'].apiDir}:/opt/r-lightning-rest/certs`,
+    `./volumes/${dockerConfigs.rustlightning.volumeDirName}/${name}/${dockerConfigs.rustlightning.dataDir}:/home/rustlightning/.lightning`,
+    `./volumes/${dockerConfigs.rustlightning.volumeDirName}/${name}/${dockerConfigs.rustlightning.apiDir}:/opt/rustlightning-rest/certs`,
   ],
   expose: [
     '8080', // REST

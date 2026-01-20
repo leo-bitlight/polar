@@ -164,7 +164,7 @@ export const testRepoState: DockerRepoState = {
         '0.7.1-beta': '0.18.1',
       },
     },
-    'r-lightning': {
+    rustlightning: {
       latest: '0',
       versions: [],
     },
@@ -255,13 +255,13 @@ export const getNetwork = (
     managedImages: testManagedImages,
     customImages: [],
     manualMineCount: 6,
-    rlightningNodes: 0,
+    rustlightningNodes: 0,
   };
   if (tapNodeCount > 0) {
     config.lndNodes = 0;
     config.clightningNodes = 0;
     config.eclairNodes = 0;
-    config.rlightningNodes = 0;
+    config.rustlightningNodes = 0;
   }
   const network = createNetwork(config);
 

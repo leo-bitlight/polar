@@ -45,7 +45,7 @@ interface AddNetworkArgs {
   name: string;
   description: string;
   lndNodes: number;
-  rlightningNodes: number;
+  rustlightningNodes: number;
   clightningNodes: number;
   eclairNodes: number;
   bitcoindNodes: number;
@@ -330,7 +330,7 @@ const networkModel: NetworkModel = {
         name: payload.name,
         description: payload.description,
         lndNodes: payload.lndNodes,
-        rlightningNodes: payload.rlightningNodes,
+        rustlightningNodes: payload.rustlightningNodes,
         clightningNodes: payload.clightningNodes,
         eclairNodes: payload.eclairNodes,
         bitcoindNodes: payload.bitcoindNodes,
@@ -363,7 +363,7 @@ const networkModel: NetworkModel = {
       await getStoreActions().app.updateSettings({
         newNodeCounts: {
           LND: payload.lndNodes,
-          'r-lightning': 0,
+          rustlightning: 0,
           'c-lightning': payload.clightningNodes,
           eclair: payload.eclairNodes,
           bitcoind: payload.bitcoindNodes,

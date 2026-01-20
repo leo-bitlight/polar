@@ -55,7 +55,7 @@ export const BasePorts: Record<NodeImplementation, Record<string, number>> = {
     zmqBlock: 28334,
     zmqTx: 29335,
   },
-  'r-lightning': {
+  rustlightning: {
     rest: 7981,
     grpc: 9001,
     p2p: 9635,
@@ -103,12 +103,12 @@ export const litdCredentials = {
 };
 
 export const dockerConfigs: Record<NodeImplementationWithSimln, DockerConfig> = {
-  'r-lightning': {
+  rustlightning: {
     name: 'Rust Lightning',
     imageName: '',
     logo: clightningLogo,
     platforms: ['mac', 'linux'],
-    volumeDirName: 'r-lightning',
+    volumeDirName: 'rustlightning',
     command: [
       'lightningd',
       '--alias={{name}}',
@@ -125,7 +125,7 @@ export const dockerConfigs: Record<NodeImplementationWithSimln, DockerConfig> = 
       '--grpc-host=0.0.0.0',
       '--grpc-port=11001',
       '--log-file=-', // log to stdout
-      '--log-file=/home/rlightning/.lightning/debug.log',
+      '--log-file=/home/rustlightning/.lightning/debug.log',
       '--clnrest-port=8080',
       '--clnrest-protocol=http',
       '--clnrest-host=0.0.0.0',
@@ -404,7 +404,7 @@ export const REPO_STATE_URL =
 export const defaultRepoState: DockerRepoState = {
   version: 77,
   images: {
-    'r-lightning': {
+    rustlightning: {
       latest: '25.12',
       versions: ['25.12', '25.09.3', '25.05', '25.02.2', '25.02', '24.11.1', '24.08.1'],
     },

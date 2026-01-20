@@ -15,7 +15,7 @@ import {
   LightningNode,
   LitdNode,
   LndNode,
-  RLightningNode,
+  RustLightningNode,
   TapdNode,
 } from 'shared/types';
 import stripAnsi from 'strip-ansi';
@@ -488,8 +488,8 @@ class DockerService implements DockerLibrary {
             };
             break;
 
-          case 'r-lightning':
-            const rnode = node as RLightningNode;
+          case 'rustlightning':
+            const rnode = node as RustLightningNode;
             simNode = {
               id: rnode.name,
               address: `${getContainerName(node)}:11001`,

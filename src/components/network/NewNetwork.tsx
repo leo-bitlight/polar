@@ -54,7 +54,7 @@ const NewNetwork: React.FC = () => {
       //     "description": "t",
       //     "lndNodes": 1,
       //     "clightningNodes": 0,
-      //     "rlightningNodes": 0,
+      //     "rustlightningNodes": 0,
       //     "eclairNodes": 0,
       //     "bitcoindNodes": 1,
       //     "tapdNodes": 0,
@@ -100,7 +100,7 @@ const NewNetwork: React.FC = () => {
             tapdNodes: settings.newNodeCounts.tapd,
             litdNodes: settings.newNodeCounts.litd,
             customNodes: initialCustomValues,
-            rlightningNodes: settings.newNodeCounts['r-lightning'],
+            rustlightningNodes: settings.newNodeCounts.rustlightning,
           }}
           onFinish={createAsync.execute}
         >
@@ -181,8 +181,8 @@ const NewNetwork: React.FC = () => {
           <Row gutter={16}>
             <Col span={6}>
               <Form.Item
-                name="rlightningNodes"
-                label={dockerConfigs['r-lightning'].name}
+                name="rustlightningNodes"
+                label={dockerConfigs.rustlightning.name}
                 rules={[{ required: true, message: l('cmps.forms.required') }]}
               >
                 <InputNumber min={0} max={10} />

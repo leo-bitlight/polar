@@ -82,7 +82,7 @@ const appModel: AppModel = {
     },
     newNodeCounts: {
       LND: 0,
-      'r-lightning': 1,
+      rustlightning: 1,
       'c-lightning': 0,
       eclair: 0,
       bitcoind: 1,
@@ -93,9 +93,9 @@ const appModel: AppModel = {
     basePorts: {
       LND: { grpc: BasePorts.LND.grpc, rest: BasePorts.LND.rest },
       bitcoind: { rest: BasePorts.bitcoind.rest },
-      'r-lightning': {
-        grpc: BasePorts['r-lightning'].grpc,
-        rest: BasePorts['r-lightning'].rest,
+      rustlightning: {
+        grpc: BasePorts.rustlightning.grpc,
+        rest: BasePorts.rustlightning.rest,
       },
       'c-lightning': {
         grpc: BasePorts['c-lightning'].grpc,

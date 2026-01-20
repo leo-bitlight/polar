@@ -1,5 +1,5 @@
 // import { debug } from 'electron-log';
-import { RLightningNode, LightningNode } from 'shared/types';
+import { RustLightningNode, LightningNode } from 'shared/types';
 import { httpRequest } from 'shared/utils';
 import { io, Socket } from 'socket.io-client';
 // import { read } from 'utils/files';
@@ -12,7 +12,7 @@ interface ConfigOptions {
   };
 }
 
-const setupConfig = async (rln: RLightningNode): Promise<ConfigOptions> => {
+const setupConfig = async (rln: RustLightningNode): Promise<ConfigOptions> => {
   // const rune = await read(rln.paths.rune, 'utf-8');
   const config = {
     url: `http://127.0.0.1:${rln.ports.rest}`,
@@ -29,13 +29,13 @@ const request = async <T>(
   path: string,
   bodyObj?: any,
 ): Promise<T> => {
-  if (node.implementation !== 'r-lightning') {
+  if (node.implementation !== 'rustlightning') {
     throw new Error(
-      `RLightningService cannot be used for '${node.implementation}' nodes`,
+      `RustLightningService cannot be used for '${node.implementation}' nodes`,
     );
   }
 
-  const rln = node as RLightningNode;
+  const rln = node as RustLightningNode;
   // const id = Math.round(Math.random() * Date.now());
 
   const config = await setupConfig(rln);
@@ -76,14 +76,14 @@ const listenerCache: {
   [key: number]: Socket;
 } = {};
 
-export const getListener = async (node: RLightningNode): Promise<Socket> => {
+export const getListener = async (node: RustLightningNode): Promise<Socket> => {
   if (!listenerCache[node.ports.rest]) {
     listenerCache[node.ports.rest] = await setupListener(node);
   }
   return listenerCache[node.ports.rest];
 };
 
-export const removeListener = (node: RLightningNode): void => {
+export const removeListener = (node: RustLightningNode): void => {
   if (listenerCache[node.ports.rest]) {
     listenerCache[node.ports.rest].disconnect();
     delete listenerCache[node.ports.rest];
@@ -98,7 +98,7 @@ export const clearListeners = () => {
   });
 };
 
-export const setupListener = async (node: RLightningNode): Promise<Socket> => {
+export const setupListener = async (node: RustLightningNode): Promise<Socket> => {
   const config = await setupConfig(node);
   listenerCache[node.ports.rest] = listen(config);
   return listenerCache[node.ports.rest];

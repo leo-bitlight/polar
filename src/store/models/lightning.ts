@@ -303,7 +303,7 @@ const lightningModel: LightningModel = {
     // mapping of the number of seconds to wait for each implementation
     const nodeDelays: Record<LightningNode['implementation'], number> = {
       LND: 1,
-      'r-lightning': 2,
+      rustlightning: 2,
       'c-lightning': 2,
       eclair: 2,
       litd: 1,

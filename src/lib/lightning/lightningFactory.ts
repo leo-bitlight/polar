@@ -17,7 +17,7 @@ class LightningFactory {
   constructor() {
     this._services = {
       LND: lndService,
-      'r-lightning': null as any,
+      rustlightning: null as any,
       'c-lightning': clightningService,
       eclair: eclairService,
       litd: lndService,

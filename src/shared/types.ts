@@ -26,7 +26,7 @@ export interface CommonNode {
 
 export interface LightningNode extends CommonNode {
   type: 'lightning';
-  implementation: 'LND' | 'c-lightning' | 'eclair' | 'litd' | 'r-lightning';
+  implementation: 'LND' | 'c-lightning' | 'eclair' | 'litd' | 'rustlightning';
   /** 该节点使用的 比特币节点 的名字，比如同一个比特币节点启了多个实例，名字分别为 backend1 backend2 等 */
   backendName: string;
   ports: Record<string, number | undefined>;
@@ -62,8 +62,8 @@ export interface CLightningNode extends LightningNode {
   };
 }
 
-export interface RLightningNode extends LightningNode {
-  implementation: 'r-lightning';
+export interface RustLightningNode extends LightningNode {
+  implementation: 'rustlightning';
   paths: {
     rune: string;
     tlsCert?: string;

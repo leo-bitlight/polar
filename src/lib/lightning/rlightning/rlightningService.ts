@@ -25,7 +25,7 @@ import {
   WalletNewAddressResponse,
 } from 'lib/rgb/IService';
 
-export default class RLightningService implements LightningService {
+export default class RustLightningService implements LightningService {
   async waitUntilOnline(node: LightningNode): Promise<void> {
     node;
     throw new Error('Method not implemented.');

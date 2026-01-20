@@ -1,4 +1,4 @@
-import { RLightningNode } from 'shared/types';
+import { RustLightningNode } from 'shared/types';
 import RgbService from './rgbService';
 
 export default class RgbFactory {
@@ -17,7 +17,7 @@ export default class RgbFactory {
    * Returns a TAP service for the given node
    * @param node the TAP node object
    */
-  getService(node: RLightningNode): RgbService {
+  getService(node: RustLightningNode): RgbService {
     return this._services[node.implementation];
   }
 }
