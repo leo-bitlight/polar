@@ -25,7 +25,7 @@ export interface Network {
   description: string;
   /** 运行状态 */
   status: Status;
-  /** 该网络的 docker compose yaml 配置文件存放位置 */
+  /** ~/.polar/networks/{network-id} */
   path: string;
   autoMineMode: AutoMineMode;
   nodes: {
@@ -75,11 +75,13 @@ export interface AppSettings {
   lang: string;
   theme: 'light' | 'dark';
   checkForUpdatesOnStartup: boolean;
-  /** 预定义的镜像 lists of docker image customizations */
+  /**
+   * hub 以及 本地 镜像信息，包含了镜像的启动命令
+   */
   nodeImages: {
-    /** 项目写死的一些镜像基本信息 包含启动命令 */
+    /** 已经上传到 Docker Hub 的镜像，包含了镜像的启动命令 */
     managed: ManagedImage[];
-    /** 自定义的比特币镜像 */
+    /** 本地自定义的镜像信息，包含了镜像的启动命令 */
     custom: CustomImage[];
   };
   /** The default number of each node when creating a new network */
@@ -111,12 +113,15 @@ export interface DockerConfig {
 }
 
 export interface DockerRepoImage {
-  /** 最新的版本 */
+  /** Current version in use */
   latest: string;
   versions: string[];
   /**
    * a mapping of the image version to the highest compatible bitcoind version
-   * {闪电网络版本： 兼容的比特币版本}
+   *
+   * ```
+   * {'Lightning Node Version': 'Compatible Bitcoin Version'}
+   * ```
    */
   compatibility?: Record<string, string>;
 }
@@ -127,9 +132,11 @@ export interface DockerRepoState {
    */
   version: number;
   /**
-   * docker 仓库已经上传的所有支持的镜像详细信息
+   * docker hub 已经上传并维护的镜像版本信息。它不包含镜像的启动命令信息,启动命令需要使用 `managed` 中的命令
    *
-   * 但是不包含启动命令，启动命令需要使用 `managed` 中的命令
+   * ```
+   * {imageName: {'...'}}
+   * ```
    */
   images: Record<NodeImplementation, DockerRepoImage>;
 }
@@ -142,7 +149,7 @@ export interface DockerRepoUpdates {
 export interface DockerLibrary {
   getVersions: (throwOnError?: boolean) => Promise<DockerVersions>;
   getImages: () => Promise<string[]>;
-  /** 将网络中所有镜像脚本保存成 docker-compose.yml 文件 */
+  /** 根据配置生成 docker-compose.yml 文件 */
   saveComposeFile: (network: Network) => Promise<void>;
   start: (network: Network) => Promise<void>;
   stop: (network: Network) => Promise<void>;

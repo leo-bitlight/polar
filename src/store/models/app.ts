@@ -32,11 +32,25 @@ export interface AppModel {
   initialized: boolean;
   settings: AppSettings;
   dockerVersions: DockerVersions;
-  /** 已经下载到 docker host 的镜像 */
+  /**
+   * 已经下载到 docker host 的镜像
+   */
   dockerImages: string[];
-  // all images that are available on Docker Hub
-  /** 写死的镜像详细信息， 检查更新时 REPO_STATE_URL 获取的信息会覆盖这个值 */
+  /**
+   * 各个镜像的版本信息配置，检查更新时 REPO_STATE_URL 获取的信息会覆盖这个值
+   */
   dockerRepoState: DockerRepoState;
+  /**
+   * 当前支持的所有镜像的所有版本信息，以及从
+   *
+   * ```
+   * {
+   *    implementation,
+   *    version,
+   *    command,
+   * }[]
+   * ```
+   */
   computedManagedImages: Computed<AppModel, ManagedImage[]>;
   setInitialized: Action<AppModel, boolean>;
   setSettings: Action<AppModel, Partial<AppSettings>>;
@@ -108,9 +122,7 @@ const appModel: AppModel = {
   dockerVersions: { docker: '', compose: '' },
   dockerImages: [],
   dockerRepoState: defaultRepoState,
-  // computed properties
   computedManagedImages: computed(state => {
-    // 保存每个镜像 及其 所有版本
     const nodes: ManagedImage[] = [];
     const { managed } = state.settings.nodeImages;
 

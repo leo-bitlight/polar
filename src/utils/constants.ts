@@ -405,8 +405,8 @@ export const defaultRepoState: DockerRepoState = {
   version: 77,
   images: {
     rustlightning: {
-      latest: '25.12',
-      versions: ['25.12', '25.09.3', '25.05', '25.02.2', '25.02', '24.11.1', '24.08.1'],
+      latest: '0.1',
+      versions: ['0.1'],
     },
     LND: {
       latest: '0.20.0-beta',

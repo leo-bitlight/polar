@@ -5,6 +5,7 @@ import {
   EclairNode,
   LitdNode,
   LndNode,
+  RustLightningNode,
   TapdNode,
 } from 'shared/types';
 import {
@@ -14,7 +15,16 @@ import {
   litdCredentials,
 } from 'utils/constants';
 import { getContainerName, getDefaultCommand } from 'utils/network';
-import { bitcoind, clightning, eclair, litd, lnd, tapd, simln } from './nodeTemplates';
+import {
+  bitcoind,
+  clightning,
+  eclair,
+  litd,
+  lnd,
+  tapd,
+  simln,
+  rustlightning,
+} from './nodeTemplates';
 
 export interface ComposeService {
   image: string;
@@ -75,6 +85,31 @@ class ComposeFile {
     const command = this.mergeCommand(nodeCommand, variables);
     // add the docker service
     const svc = bitcoind(name, container, image, rpc, p2p, zmqBlock, zmqTx, command);
+    this.addService(svc);
+  }
+
+  addRustlightning(node: RustLightningNode, backend: CommonNode) {
+    const { name, version, ports } = node;
+    const { rest, grpc, p2p } = ports;
+    const container = getContainerName(node);
+    // define the variable substitutions
+    const variables = {
+      name: node.name,
+      containerName: container,
+      backendName: getContainerName(backend),
+      rpcUser: bitcoinCredentials.user,
+      rpcPass: bitcoinCredentials.pass,
+    };
+    // use the node's custom image or the default for the implementation
+    const image =
+      node.docker.image || `${dockerConfigs.rustlightning.imageName}:${version}`;
+    // use the node's custom command or the default for the implementation
+    const nodeCommand =
+      node.docker.command || getDefaultCommand('rustlightning', version);
+    // replace the variables in the command
+    const command = this.mergeCommand(nodeCommand, variables);
+    // add the docker service
+    const svc = rustlightning(name, container, image, rest, grpc, p2p, command);
     this.addService(svc);
   }
 

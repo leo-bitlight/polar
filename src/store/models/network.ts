@@ -312,7 +312,7 @@ const networkModel: NetworkModel = {
       // convert the customNodes object into an array of custom images with counts
       const customImages: { image: CustomImage; count: number }[] = [];
 
-      // customNodes: {nodeId: count}
+      // customNodes: {自定义节点的 id 或 名字: count}
       Object.entries(payload.customNodes)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, count]) => count > 0)
@@ -330,7 +330,7 @@ const networkModel: NetworkModel = {
         name: payload.name,
         description: payload.description,
         lndNodes: payload.lndNodes,
-        rustlightningNodes: payload.rustlightningNodes,
+        // rustlightningNodes: payload.rustlightningNodes,
         clightningNodes: payload.clightningNodes,
         eclairNodes: payload.eclairNodes,
         bitcoindNodes: payload.bitcoindNodes,
@@ -346,7 +346,7 @@ const networkModel: NetworkModel = {
       // Cache a network to memory
       actions.add(network);
 
-      // 拿到刚才提交的 network
+      // 获取刚才保存的 network
       const { networks } = getState();
       const newNetwork = networks[networks.length - 1];
       await injections.dockerService.saveComposeFile(newNetwork);
@@ -356,14 +356,14 @@ const networkModel: NetworkModel = {
       getStoreActions().designer.setChart({ id: newNetwork.id, chart });
       getStoreActions().designer.setActiveId(newNetwork.id);
 
-      // 文件形式将网络信息保存到本地
+      // 文件形式将网络序列化信息保存到本地
       await actions.save();
 
       // 更新缓存
       await getStoreActions().app.updateSettings({
         newNodeCounts: {
           LND: payload.lndNodes,
-          rustlightning: 0,
+          rustlightning: payload.rustlightningNodes,
           'c-lightning': payload.clightningNodes,
           eclair: payload.eclairNodes,
           bitcoind: payload.bitcoindNodes,

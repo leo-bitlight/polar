@@ -24,6 +24,10 @@ export const legacyDataPath = join(remote.app.getPath('userData'), 'data');
 
 /**
  * path where networks data is stored
+ *
+ * ```
+ * ~/.polar/networks
+ * ```
  */
 export const networksPath = join(dataPath, 'networks');
 

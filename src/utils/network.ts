@@ -79,8 +79,7 @@ export const getInvoicePayload = (
 };
 
 /**
- * @param images 按照版本平铺的所有镜像列表
- * @param implementation 镜像名
+ * 从镜像列表查找 特定实现 和 版本 的镜像
  */
 export const getImageCommand = (
   images: ManagedImage[],
@@ -498,8 +497,7 @@ export const createNetwork = (config: {
   id: number;
   name: string;
   description: string;
-  /** Rust version node */
-  rustlightningNodes: number;
+  // rustlightningNodes: number;
   lndNodes: number;
   clightningNodes: number;
   eclairNodes: number;
@@ -507,7 +505,21 @@ export const createNetwork = (config: {
   tapdNodes: number;
   litdNodes: number;
   repoState: DockerRepoState;
+  /**
+   * @see ManagedImage
+   *
+   * ```
+   * {
+   *    implementation,
+   *    version,
+   *    command,
+   * }[]
+   * ```
+   */
   managedImages: ManagedImage[];
+  /**
+   * 自定义镜像数据来自于 `settings.nodeImages.custom` 自带了启动命令
+   */
   customImages: { image: CustomImage; count: number }[];
   status?: Status;
   basePorts?: NodeBasePorts;
@@ -519,7 +531,7 @@ export const createNetwork = (config: {
     name,
     description,
     lndNodes,
-    rustlightningNodes,
+    // rustlightningNodes,
     clightningNodes,
     eclairNodes,
     bitcoindNodes,
@@ -601,6 +613,27 @@ export const createNetwork = (config: {
 
   // add custom lightning nodes
   customImages
+    .filter(i => i.image.implementation === 'rustlightning')
+    .forEach(({ image, count }) => {
+      const { latest, compatibility } = repoState.images.rustlightning;
+      const docker = { image: image.dockerImage, command: image.command };
+      const basePort = basePorts?.rustlightning;
+      range(count).forEach(() => {
+        lightning.push(
+          createRustLightningNetworkNode(
+            network,
+            latest,
+            compatibility,
+            docker,
+            status,
+            basePort,
+          ),
+        );
+      });
+    });
+
+  /*
+  customImages
     .filter(i => ['LND', 'c-lightning', 'eclair'].includes(i.image.implementation))
     .forEach(({ image, count }) => {
       const { latest, compatibility } = repoState.images.LND;
@@ -623,30 +656,34 @@ export const createNetwork = (config: {
         );
       });
     });
+  */
 
   // 构造闪电网络 node
+  // 与上面 customImages 不同的是取命令的方式
+  // customImages 从 `settings.nodeImages.custom` 中取
+  // range 这里从 `settings.nodeImages.managed` 中取
   range(
-    Math.max(rustlightningNodes, lndNodes, clightningNodes, eclairNodes, litdNodes),
+    Math.max(/* rustlightningNodes, */ lndNodes, clightningNodes, eclairNodes, litdNodes),
   ).forEach(i => {
-    // Rust 版本节点
-    if (i < rustlightningNodes) {
-      const { latest, compatibility } = repoState.images.rustlightning;
-      const cmd = getImageCommand(managedImages, 'rustlightning', latest);
-      lightning.push(
-        createRustLightningNetworkNode(
-          network,
-          latest,
-          compatibility,
-          dockerWrap(cmd),
-          status,
-          basePorts?.rustlightning,
-        ),
-      );
-    }
+    // Rust version
+    // if (i < rustlightningNodes) {
+    //   const { latest, compatibility } = repoState.images.rustlightning;
+    //   const cmd = getImageCommand(managedImages, 'rustlightning', latest);
+    //   lightning.push(
+    //     createRustLightningNetworkNode(
+    //       network,
+    //       latest,
+    //       compatibility,
+    //       dockerWrap(cmd),
+    //       status,
+    //       basePorts?.rustlightning,
+    //     ),
+    //   );
+    // }
 
     if (i < lndNodes) {
-      const { latest, compatibility } = repoState.images.rustlightning;
-      const cmd = getImageCommand(managedImages, 'rustlightning', latest);
+      const { latest, compatibility } = repoState.images.LND;
+      const cmd = getImageCommand(managedImages, 'LND', latest);
       lightning.push(
         createLndNetworkNode(
           network,

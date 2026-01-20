@@ -100,7 +100,7 @@ const NewNetwork: React.FC = () => {
             tapdNodes: settings.newNodeCounts.tapd,
             litdNodes: settings.newNodeCounts.litd,
             customNodes: initialCustomValues,
-            rustlightningNodes: settings.newNodeCounts.rustlightning,
+            // rustlightningNodes: settings.newNodeCounts.rustlightning,
           }}
           onFinish={createAsync.execute}
         >
@@ -178,7 +178,7 @@ const NewNetwork: React.FC = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
+          {/* <Row gutter={16}>
             <Col span={6}>
               <Form.Item
                 name="rustlightningNodes"
@@ -188,7 +188,7 @@ const NewNetwork: React.FC = () => {
                 <InputNumber min={0} max={10} />
               </Form.Item>
             </Col>
-          </Row>
+          </Row> */}
           <Row gutter={16}>
             <Col span={6}>
               <Form.Item

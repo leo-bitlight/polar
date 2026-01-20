@@ -225,12 +225,12 @@ export const rustlightning = (
   ],
   expose: [
     '8080', // REST
-    grpcPort ? '11001' : '', // GRPC
+    // grpcPort ? '11001' : '', // GRPC
     '9735', // p2p
   ].filter(p => !!p), // filter out empty strings
   ports: [
     `${restPort}:8080`, // REST
-    grpcPort ? `${grpcPort}:11001` : '', // REST
+    // grpcPort ? `${grpcPort}:11001` : '', // REST
     `${p2pPort}:9735`, // p2p
   ].filter(p => !!p), // filer out empty strings
 });

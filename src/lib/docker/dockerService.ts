@@ -139,6 +139,10 @@ class DockerService implements DockerLibrary {
     bitcoin.forEach(node => file.addBitcoind(node));
 
     lightning.forEach(node => {
+      if (node.implementation === 'rustlightning') {
+        const backend = bitcoin.find(n => n.name === node.backendName) || bitcoin[0];
+        file.addRustlightning(node as RustLightningNode, backend);
+      }
       if (node.implementation === 'LND') {
         const lnd = node as LndNode;
         const backend = bitcoin.find(n => n.name === lnd.backendName) || bitcoin[0];
@@ -162,6 +166,7 @@ class DockerService implements DockerLibrary {
         file.addLitd(litd, backend, proofCourier);
       }
     });
+
     tap.forEach(node => {
       if (node.implementation === 'tapd') {
         const tapd = node as TapdNode;
