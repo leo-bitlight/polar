@@ -45,6 +45,9 @@ export interface PayInvoicePayload {
 }
 
 export interface LightningModel {
+  /**
+   * 调用 getinfo 或者 getWalletBalance 胡 getChannels 之后存储节点信息
+   */
   nodes: LightningNodeMapping;
   channelsInfo: ChannelInfo[];
   removeNode: Action<LightningModel, string>;
@@ -84,6 +87,7 @@ export interface LightningModel {
     RootModel,
     Promise<string>
   >;
+  /** 在通道支付比特币 */
   payInvoice: Thunk<
     LightningModel,
     PayInvoicePayload,
@@ -299,6 +303,7 @@ const lightningModel: LightningModel = {
     // mapping of the number of seconds to wait for each implementation
     const nodeDelays: Record<LightningNode['implementation'], number> = {
       LND: 1,
+      'r-lightning': 2,
       'c-lightning': 2,
       eclair: 2,
       litd: 1,

@@ -54,6 +54,7 @@ const NewNetwork: React.FC = () => {
       //     "description": "t",
       //     "lndNodes": 1,
       //     "clightningNodes": 0,
+      //     "rlightningNodes": 0,
       //     "eclairNodes": 0,
       //     "bitcoindNodes": 1,
       //     "tapdNodes": 0,
@@ -99,6 +100,7 @@ const NewNetwork: React.FC = () => {
             tapdNodes: settings.newNodeCounts.tapd,
             litdNodes: settings.newNodeCounts.litd,
             customNodes: initialCustomValues,
+            rlightningNodes: settings.newNodeCounts['r-lightning'],
           }}
           onFinish={createAsync.execute}
         >
@@ -117,7 +119,7 @@ const NewNetwork: React.FC = () => {
             <Input placeholder={l('namePhlDescription')} />
           </Form.Item>
 
-          {/* 自定义 比特币 节点 */}
+          {/* 自定义 节点 */}
           {customNodes.length > 0 && (
             <>
               <Styled.Divider orientation="left">{l('customLabel')}</Styled.Divider>
@@ -173,6 +175,17 @@ const NewNetwork: React.FC = () => {
                 rules={[{ required: true, message: l('cmps.forms.required') }]}
               >
                 <InputNumber min={1} max={10} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={6}>
+              <Form.Item
+                name="rlightningNodes"
+                label={dockerConfigs['r-lightning'].name}
+                rules={[{ required: true, message: l('cmps.forms.required') }]}
+              >
+                <InputNumber min={0} max={10} />
               </Form.Item>
             </Col>
           </Row>

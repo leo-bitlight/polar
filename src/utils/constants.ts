@@ -55,6 +55,11 @@ export const BasePorts: Record<NodeImplementation, Record<string, number>> = {
     zmqBlock: 28334,
     zmqTx: 29335,
   },
+  'r-lightning': {
+    rest: 7981,
+    grpc: 9001,
+    p2p: 9635,
+  },
   LND: {
     rest: 8081,
     grpc: 10001,
@@ -62,8 +67,8 @@ export const BasePorts: Record<NodeImplementation, Record<string, number>> = {
   },
   'c-lightning': {
     rest: 8181,
-    p2p: 9835,
     grpc: 11001,
+    p2p: 9835,
   },
   eclair: {
     rest: 8281,
@@ -98,6 +103,40 @@ export const litdCredentials = {
 };
 
 export const dockerConfigs: Record<NodeImplementationWithSimln, DockerConfig> = {
+  'r-lightning': {
+    name: 'Rust Lightning',
+    imageName: '',
+    logo: clightningLogo,
+    platforms: ['mac', 'linux'],
+    volumeDirName: 'r-lightning',
+    command: [
+      'lightningd',
+      '--alias={{name}}',
+      '--addr={{name}}',
+      '--addr=0.0.0.0:9735',
+      '--network=regtest',
+      '--bitcoin-rpcuser={{rpcUser}}',
+      '--bitcoin-rpcpassword={{rpcPass}}',
+      '--bitcoin-rpcconnect={{backendName}}',
+      '--bitcoin-rpcport=18443',
+      '--log-level=debug',
+      '--dev-bitcoind-poll=2',
+      '--dev-fast-gossip',
+      '--grpc-host=0.0.0.0',
+      '--grpc-port=11001',
+      '--log-file=-', // log to stdout
+      '--log-file=/home/rlightning/.lightning/debug.log',
+      '--clnrest-port=8080',
+      '--clnrest-protocol=http',
+      '--clnrest-host=0.0.0.0',
+      '--clnrest-cors-origins=*',
+      '--developer',
+    ].join('\n  '),
+    // if vars are modified, also update composeFile.ts & the i18n strings for cmps.nodes.CommandVariables
+    variables: ['name', 'backendName', 'rpcUser', 'rpcPass'],
+    dataDir: 'lightningd',
+    apiDir: 'rest-api',
+  },
   LND: {
     name: 'LND',
     imageName: 'polarlightning/lnd',
@@ -365,6 +404,10 @@ export const REPO_STATE_URL =
 export const defaultRepoState: DockerRepoState = {
   version: 77,
   images: {
+    'r-lightning': {
+      latest: '25.12',
+      versions: ['25.12', '25.09.3', '25.05', '25.02.2', '25.02', '24.11.1', '24.08.1'],
+    },
     LND: {
       latest: '0.20.0-beta',
       versions: [

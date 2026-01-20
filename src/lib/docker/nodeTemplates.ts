@@ -204,3 +204,33 @@ export const simln = (
   expose: [],
   ports: [],
 });
+
+export const rlightning = (
+  name: string,
+  container: string,
+  image: string,
+  restPort: number,
+  grpcPort: number,
+  p2pPort: number,
+  command: string,
+): ComposeService => ({
+  image,
+  container_name: container,
+  hostname: name,
+  command: trimInside(command),
+  restart: 'always',
+  volumes: [
+    `./volumes/${dockerConfigs['r-lightning'].volumeDirName}/${name}/${dockerConfigs['r-lightning'].dataDir}:/home/rlightning/.lightning`,
+    `./volumes/${dockerConfigs['r-lightning'].volumeDirName}/${name}/${dockerConfigs['r-lightning'].apiDir}:/opt/r-lightning-rest/certs`,
+  ],
+  expose: [
+    '8080', // REST
+    grpcPort ? '11001' : '', // GRPC
+    '9735', // p2p
+  ].filter(p => !!p), // filter out empty strings
+  ports: [
+    `${restPort}:8080`, // REST
+    grpcPort ? `${grpcPort}:11001` : '', // REST
+    `${p2pPort}:9735`, // p2p
+  ].filter(p => !!p), // filer out empty strings
+});

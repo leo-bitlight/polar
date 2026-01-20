@@ -15,6 +15,7 @@ import {
   LightningNode,
   LitdNode,
   LndNode,
+  RLightningNode,
   TapdNode,
 } from 'shared/types';
 import stripAnsi from 'strip-ansi';
@@ -484,6 +485,17 @@ class DockerService implements DockerLibrary {
               address: `${getContainerName(node)}:10009`,
               cert: `/home/simln/.${getPosixPath(litd.paths.tlsCert)}`,
               macaroon: `/home/simln/.${getPosixPath(litd.paths.adminMacaroon)}`,
+            };
+            break;
+
+          case 'r-lightning':
+            const rnode = node as RLightningNode;
+            simNode = {
+              id: rnode.name,
+              address: `${getContainerName(node)}:11001`,
+              ca_cert: `/home/simln/.${getPosixPath(rnode.paths.tlsCert)}`,
+              client_cert: `/home/simln/.${getPosixPath(rnode.paths.tlsClientCert)}`,
+              client_key: `/home/simln/.${getPosixPath(rnode.paths.tlsClientKey)}`,
             };
             break;
         }

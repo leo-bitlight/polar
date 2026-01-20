@@ -15,6 +15,7 @@ import {
   LitdNode,
   LndNode,
   NodeImplementation,
+  RLightningNode,
   Status,
   TapdNode,
   TapNode,
@@ -190,6 +191,49 @@ export const filterCompatibleBackends = (
     );
   }
   return compatibleBackends;
+};
+
+/**
+ * Create Rust version node
+ */
+export const createRLightningNetworkNode = (
+  network: Network,
+  version: string,
+  compatibility: DockerRepoImage['compatibility'],
+  docker: CommonNode['docker'],
+  status = Status.Stopped,
+  basePort = BasePorts['r-lightning'],
+): RLightningNode => {
+  const { bitcoin, lightning } = network.nodes;
+  const implementation: LightningNode['implementation'] = 'r-lightning';
+  const backends = filterCompatibleBackends(
+    implementation,
+    version,
+    compatibility,
+    bitcoin,
+  );
+  // determines if GRPC is supported in a version of Core Lightning provided
+  const supportsGrpc = !isVersionCompatible(version, '0.10.2');
+  const id = lightning.length ? Math.max(...lightning.map(n => n.id)) + 1 : 0;
+  const name = getName(id);
+  return {
+    id,
+    networkId: network.id,
+    name,
+    type: 'lightning',
+    implementation: 'r-lightning',
+    version,
+    status,
+    // alternate between backend nodes
+    backendName: backends[id % backends.length].name,
+    paths: getCLightningFilePaths(name, supportsGrpc, network),
+    ports: {
+      rest: basePort.rest + id,
+      grpc: supportsGrpc ? basePort.grpc + id : 0,
+      p2p: BasePorts['r-lightning'].p2p + id,
+    },
+    docker,
+  };
 };
 
 export const createLndNetworkNode = (
@@ -454,6 +498,8 @@ export const createNetwork = (config: {
   id: number;
   name: string;
   description: string;
+  /** Rust version node */
+  rlightningNodes: number;
   lndNodes: number;
   clightningNodes: number;
   eclairNodes: number;
@@ -473,6 +519,7 @@ export const createNetwork = (config: {
     name,
     description,
     lndNodes,
+    rlightningNodes,
     clightningNodes,
     eclairNodes,
     bitcoindNodes,
@@ -578,10 +625,28 @@ export const createNetwork = (config: {
     });
 
   // 构造闪电网络 node
-  range(Math.max(lndNodes, clightningNodes, eclairNodes, litdNodes)).forEach(i => {
+  range(
+    Math.max(rlightningNodes, lndNodes, clightningNodes, eclairNodes, litdNodes),
+  ).forEach(i => {
+    // Rust 版本节点
+    if (i < rlightningNodes) {
+      const { latest, compatibility } = repoState.images['r-lightning'];
+      const cmd = getImageCommand(managedImages, 'r-lightning', latest);
+      lightning.push(
+        createRLightningNetworkNode(
+          network,
+          latest,
+          compatibility,
+          dockerWrap(cmd),
+          status,
+          basePorts?.['r-lightning'],
+        ),
+      );
+    }
+
     if (i < lndNodes) {
-      const { latest, compatibility } = repoState.images.LND;
-      const cmd = getImageCommand(managedImages, 'LND', latest);
+      const { latest, compatibility } = repoState.images['r-lightning'];
+      const cmd = getImageCommand(managedImages, 'r-lightning', latest);
       lightning.push(
         createLndNetworkNode(
           network,
@@ -678,6 +743,9 @@ export const renameNode = async (network: Network, node: AnyNode, newName: strin
           litdNode.name = newName;
           litdNode.paths = getLitdFilePaths(newName, network);
           return litdNode;
+
+        case 'r-lightning':
+          throw new Error('Renaming r-lightning nodes is not supported yet');
       }
     case 'bitcoin':
       network.nodes.lightning
