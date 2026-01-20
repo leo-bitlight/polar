@@ -33,7 +33,7 @@ export interface AppModel {
   settings: AppSettings;
   dockerVersions: DockerVersions;
   /**
-   * 已经下载到 docker host 的镜像
+   * 已经安装到 docker host 的镜像
    */
   dockerImages: string[];
   /**
@@ -92,7 +92,15 @@ const appModel: AppModel = {
     checkForUpdatesOnStartup: false,
     nodeImages: {
       managed: [],
-      custom: [],
+      custom: [
+        {
+          id: 'rustlightning-local',
+          name: 'Rustlightning',
+          implementation: 'rustlightning',
+          dockerImage: '',
+          command: '',
+        },
+      ],
     },
     newNodeCounts: {
       LND: 0,

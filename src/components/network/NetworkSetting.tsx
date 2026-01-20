@@ -53,7 +53,7 @@ const NetworkSetting: React.FC = () => {
         },
         rustlightning: {
           rest: values.rustlightning,
-          grpc: '',
+          grpc: 0,
         },
         'c-lightning': {
           rest: values['c-lightning'],

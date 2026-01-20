@@ -467,6 +467,8 @@ export const createNetworkTool = thunk<
     litdNodes: baseCounts.litdNodes,
     customNodes: {},
     manualMineCount: 6,
+    // todo
+    rustlightningNodes: 0,
   };
 
   info('MCP: Creating network with plan:', {

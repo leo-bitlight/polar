@@ -15,6 +15,9 @@ interface Props {
   onClose: () => void;
 }
 
+/**
+ * Add custom node
+ */
 const CustomImageModal: React.FC<Props> = ({ image, onClose }) => {
   const { l } = usePrefixedTranslation('cmps.nodeImages.CustomImageModal');
   const [form] = Form.useForm();

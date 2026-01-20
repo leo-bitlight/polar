@@ -30,6 +30,7 @@ const Styled = {
 
 interface Props {
   network: Network;
+  /** Start or Stop the network */
   onClick: () => void;
   onRenameClick: () => void;
   onDeleteClick: () => void;

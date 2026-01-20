@@ -20,6 +20,7 @@ import { ThemeColors } from 'theme/colors';
 import { dockerConfigs } from 'utils/constants';
 import { isWindows } from 'utils/system';
 import { HOME } from 'components/routing';
+import RustLightningService from 'lib/lightning/rlightning/rlightningService';
 
 const Styled = {
   PageHeader: styled(PageHeader)<{ colors: ThemeColors['pageHeader'] }>`
@@ -75,8 +76,23 @@ const NewNetwork: React.FC = () => {
     }
   });
 
+  const testHttp = () => {
+    const node: any = {
+      type: 'lightning',
+      implementation: 'rustlightning',
+      backendName: '',
+      ports: {
+        rest: 2333,
+      },
+    };
+    new RustLightningService().hello(node).then(res => {
+      console.log('testHttp response:', res);
+    });
+  };
+
+  // Custom node initial number set to 1
   const initialCustomValues = customNodes.reduce((result, node) => {
-    result[node.id] = 0;
+    result[node.id] = 1;
     return result;
   }, {} as Record<string, number>);
 
@@ -88,6 +104,9 @@ const NewNetwork: React.FC = () => {
         onBack={() => navigateTo(HOME)}
       />
       <Card>
+        <Button onClick={testHttp}>test http</Button>
+        <br />
+
         <Form
           layout="vertical"
           colon={false}

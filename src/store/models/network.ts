@@ -758,6 +758,7 @@ const networkModel: NetworkModel = {
     ) => {
       let network = getState().networks.find(n => n.id === networkId);
       if (!network) throw new Error(l('networkByIdErr', { networkId }));
+
       const { dockerImages } = getStoreState().app;
       // make sure all non-Polar images are available
       const missingImages = getMissingImages(network, dockerImages).filter(
@@ -766,6 +767,7 @@ const networkModel: NetworkModel = {
       if (missingImages.length) {
         throw new Error(`${l('missingImages')}: ${missingImages.join(', ')}`);
       }
+
       const { id } = network;
       actions.setStatus({ id: id, status: Status.Starting });
       try {
@@ -884,6 +886,7 @@ const networkModel: NetworkModel = {
   monitorStartup: thunk(
     async (actions, nodes, { injections, getStoreState, getStoreActions }) => {
       if (!nodes.length) return;
+
       const id = nodes[0].networkId;
       const network = getStoreState().network.networks.find(n => n.id === id);
       if (!network) throw new Error(l('networkByIdErr', { networkId: id }));
@@ -950,6 +953,7 @@ const networkModel: NetworkModel = {
             );
         }
       }
+
       // after all bitcoin nodes are online, mine one block so that Eclair nodes will start
       if (btcNodesOnline.length) {
         const node = network.nodes.bitcoin[0];

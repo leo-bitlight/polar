@@ -12,7 +12,7 @@ import {
   LightningNodePaymentRequest,
   LightningNodeChannelEvent,
 } from '../types';
-import { httpPost } from './api';
+import { httpPost, httpGet } from './api';
 import {
   BalancesResponse,
   Bolt11ReceiveRequest,
@@ -24,16 +24,31 @@ import {
   SendResponse,
   WalletNewAddressResponse,
 } from 'lib/rgb/IService';
+import { waitFor } from 'utils/async';
 
 export default class RustLightningService implements LightningService {
-  async waitUntilOnline(node: LightningNode): Promise<void> {
-    node;
-    throw new Error('Method not implemented.');
+  async hello(node: LightningNode): Promise<string> {
+    const res = await httpGet<any>(node, 'hello', null);
+    return res;
+  }
+
+  async waitUntilOnline(
+    node: LightningNode,
+    interval = 3 * 1000, // check every 3 seconds
+    timeout = 120 * 1000, // timeout after 120 seconds
+  ): Promise<void> {
+    return waitFor(
+      async () => {
+        await this.getInfo(node);
+      },
+      interval,
+      timeout,
+    );
   }
 
   async getInfo(node: LightningNode): Promise<LightningNodeInfo> {
     node;
-    throw new Error('Method not implemented.');
+    throw new Error('RustLightningService:getInfo() Method not implemented.');
   }
 
   async getBalances(node: LightningNode): Promise<LightningNodeBalances> {

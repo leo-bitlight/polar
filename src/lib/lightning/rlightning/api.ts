@@ -14,8 +14,10 @@ interface ConfigOptions {
 
 const setupConfig = async (rln: RustLightningNode): Promise<ConfigOptions> => {
   // const rune = await read(rln.paths.rune, 'utf-8');
+  // rln;
   const config = {
     url: `http://127.0.0.1:${rln.ports.rest}`,
+    // url: 'https://nodes.lightning.computer/fees/v1/btc-fee-estimates.json',
     headers: {
       // rune,
     },
@@ -39,7 +41,7 @@ const request = async <T>(
   // const id = Math.round(Math.random() * Date.now());
 
   const config = await setupConfig(rln);
-  const url = `${config.url}/v1/${path}`;
+  const url = `${config.url}?/v1/${path}`;
   const body = bodyObj ? JSON.stringify(bodyObj) : undefined;
   // debug(`r-lightning API: [request] ${rln.name} ${id} "${url}" ${body || ''}`);
 
@@ -70,6 +72,14 @@ export const httpPost = async <T>(
   body?: any,
 ): Promise<T> => {
   return request<T>(node, 'POST', path, body);
+};
+
+export const httpGet = async <T>(
+  node: LightningNode,
+  path: string,
+  params?: any,
+): Promise<T> => {
+  return request<T>(node, 'GET', path, params);
 };
 
 const listenerCache: {

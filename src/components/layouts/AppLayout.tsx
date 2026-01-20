@@ -11,7 +11,7 @@ import ImageUpdatesModal from 'components/common/ImageUpdatesModal';
 import { HOME } from 'components/routing';
 import logo from 'resources/logo.png';
 import { DockerStatus, LocaleSwitch, ThemeSwitch } from './';
-import CheckForUpdatesButton from './CheckForUpdatesButton';
+// import CheckForUpdatesButton from './CheckForUpdatesButton';
 
 const { Header, Content, Footer } = Layout;
 
@@ -127,7 +127,7 @@ const AppLayout: React.FC<Props> = (props: Props) => {
       <Styled.Footer colors={theme.footer}>
         <DockerStatus />
         <Styled.FooterToggles>
-          <CheckForUpdatesButton />
+          {/* <CheckForUpdatesButton /> */}
           <LocaleSwitch />
           <ThemeSwitch />
         </Styled.FooterToggles>

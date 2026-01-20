@@ -3,6 +3,7 @@ import { clightningService } from 'lib/lightning/clightning';
 import { eclairService } from 'lib/lightning/eclair';
 import { lndService } from 'lib/lightning/lnd';
 import { LightningService } from 'types';
+import RustLightningService from './rlightning/rlightningService';
 
 /**
  * A factory class used to obtain a Lightning service based on
@@ -17,7 +18,7 @@ class LightningFactory {
   constructor() {
     this._services = {
       LND: lndService,
-      rustlightning: null as any,
+      rustlightning: new RustLightningService(),
       'c-lightning': clightningService,
       eclair: eclairService,
       litd: lndService,
