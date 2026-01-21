@@ -12,14 +12,16 @@ export interface CommonNode {
   networkId: number;
   /** 该节点的名字 alice bob 等 */
   name: string;
-  /** 该节点的网络类型 bitcoin | lightning | tap */
+  /** 该节点的网络类型 */
   type: 'bitcoin' | 'lightning' | 'tap';
   /** 该节点使用的版本 */
   version: string;
   status: Status;
   errorMsg?: string;
   docker: {
+    /** 默认是空 只有自定义节点有值 */
     image: string;
+    /** 默认为空 只有自定义节点有值。为空时会使用 constant 文件中定义的启动命令 */
     command: string;
   };
 }

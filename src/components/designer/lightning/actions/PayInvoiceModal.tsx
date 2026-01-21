@@ -74,6 +74,7 @@ const PayInvoiceModal: React.FC<Props> = ({ network }) => {
       let amount = '0';
       let assetName = 'sats';
       if (assetId === 'sats') {
+        // Pay bitcoin invoice
         const res = await payInvoice({ node, invoice });
         amount = format(res.amount);
       } else {

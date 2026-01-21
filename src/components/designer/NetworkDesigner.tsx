@@ -106,6 +106,7 @@ const NetworkDesigner: React.FC<Props> = ({ network, updateStateDelay = 3000 }) 
         />
       </Styled.ZoomButtons>
       <Sidebar network={network} chart={chart} />
+
       {openChannel.visible && <OpenChannelModal network={network} />}
       {createInvoice.visible && <CreateInvoiceModal network={network} />}
       {payInvoice.visible && <PayInvoiceModal network={network} />}

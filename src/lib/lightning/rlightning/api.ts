@@ -1,7 +1,8 @@
 // import { debug } from 'electron-log';
+import { createIpcSender } from 'lib/ipc/ipcService';
 import { RustLightningNode, LightningNode } from 'shared/types';
-import { httpRequest } from 'shared/utils';
-import { io, Socket } from 'socket.io-client';
+// import { httpRequest } from 'shared/utils';
+import { io, type Socket } from 'socket.io-client';
 // import { read } from 'utils/files';
 // import { snakeKeysToCamel } from 'utils/objects';
 
@@ -12,11 +13,10 @@ interface ConfigOptions {
   };
 }
 
-const setupConfig = async (rln: RustLightningNode): Promise<ConfigOptions> => {
-  // const rune = await read(rln.paths.rune, 'utf-8');
-  // rln;
+const setupConfig = (rln: RustLightningNode): ConfigOptions => {
+  rln;
   const config = {
-    url: `http://127.0.0.1:${rln.ports.rest}`,
+    url: `http://127.0.0.1:${rln.ports.rest}/v1`,
     // url: 'https://nodes.lightning.computer/fees/v1/btc-fee-estimates.json',
     headers: {
       // rune,
@@ -25,45 +25,73 @@ const setupConfig = async (rln: RustLightningNode): Promise<ConfigOptions> => {
   return config;
 };
 
-const request = async <T>(
+// const request = async <T>(
+//   node: LightningNode,
+//   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+//   path: string,
+//   bodyObj?: any,
+// ): Promise<T> => {
+//   if (node.implementation !== 'rustlightning') {
+//     throw new Error(
+//       `RustLightningService cannot be used for '${node.implementation}' nodes`,
+//     );
+//   }
+
+//   const rln = node as RustLightningNode;
+//   // const id = Math.round(Math.random() * Date.now());
+
+//   const config = setupConfig(rln);
+//   const url = `${config.url}?/v1/${path}`;
+//   const body = bodyObj ? JSON.stringify(bodyObj) : undefined;
+//   // debug(`r-lightning API: [request] ${rln.name} ${id} "${url}" ${body || ''}`);
+
+//   const response = await httpRequest(url, {
+//     method,
+//     headers: {
+//       ...config.headers,
+//       'Content-Type': 'application/json',
+//     },
+//     body,
+//   });
+
+//   const json = JSON.parse(response);
+//   // debug(`r-lightning API: [response] ${rln.name} ${id} ${JSON.stringify(json, null, 2)}`);
+
+//   if (json.code && json.message) {
+//     const { code, message } = json;
+//     throw new Error(`lightningd ${code}: ${message}`);
+//   }
+
+//   // return snakeKeysToCamel(json) as T;
+//   return json as T;
+// };
+
+const request2 = async <T>(
   node: LightningNode,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  method: string,
   path: string,
-  bodyObj?: any,
+  body?: any,
 ): Promise<T> => {
   if (node.implementation !== 'rustlightning') {
-    throw new Error(
-      `RustLightningService cannot be used for '${node.implementation}' nodes`,
-    );
+    throw new Error(`RustlightningService request2 error`);
   }
 
-  const rln = node as RustLightningNode;
-  // const id = Math.round(Math.random() * Date.now());
-
-  const config = await setupConfig(rln);
-  const url = `${config.url}?/v1/${path}`;
-  const body = bodyObj ? JSON.stringify(bodyObj) : undefined;
-  // debug(`r-lightning API: [request] ${rln.name} ${id} "${url}" ${body || ''}`);
-
-  const response = await httpRequest(url, {
+  const config = setupConfig(node as RustLightningNode);
+  const args = {
+    url: `${config.url}/${path}`,
     method,
+    body,
     headers: {
       ...config.headers,
       'Content-Type': 'application/json',
     },
-    body,
-  });
+  };
+  const ipc = createIpcSender('RustLightningApi', 'app');
+  const res = await ipc<any>('http', args);
 
-  const json = JSON.parse(response);
-  // debug(`r-lightning API: [response] ${rln.name} ${id} ${JSON.stringify(json, null, 2)}`);
+  if (res.error) throw new Error(res.error);
 
-  if (json.code && json.message) {
-    const { code, message } = json;
-    throw new Error(`lightningd ${code}: ${message}`);
-  }
-
-  // return snakeKeysToCamel(json) as T;
-  return json as T;
+  return res as T;
 };
 
 export const httpPost = async <T>(
@@ -71,7 +99,7 @@ export const httpPost = async <T>(
   path: string,
   body?: any,
 ): Promise<T> => {
-  return request<T>(node, 'POST', path, body);
+  return request2<T>(node, 'POST', path, body);
 };
 
 export const httpGet = async <T>(
@@ -79,7 +107,7 @@ export const httpGet = async <T>(
   path: string,
   params?: any,
 ): Promise<T> => {
-  return request<T>(node, 'GET', path, params);
+  return request2<T>(node, 'GET', path, params);
 };
 
 const listenerCache: {
@@ -109,7 +137,7 @@ export const clearListeners = () => {
 };
 
 export const setupListener = async (node: RustLightningNode): Promise<Socket> => {
-  const config = await setupConfig(node);
+  const config = setupConfig(node);
   listenerCache[node.ports.rest] = listen(config);
   return listenerCache[node.ports.rest];
 };

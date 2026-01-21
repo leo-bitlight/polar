@@ -138,7 +138,7 @@ const NewNetwork: React.FC = () => {
             <Input placeholder={l('namePhlDescription')} />
           </Form.Item>
 
-          {/* 自定义 节点 */}
+          {/* 自定义节点 */}
           {customNodes.length > 0 && (
             <>
               <Styled.Divider orientation="left">{l('customLabel')}</Styled.Divider>

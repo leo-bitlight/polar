@@ -1,6 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
-import { debug } from 'electron-log';
-import { toJSON } from 'shared/utils';
+// import { debug } from 'electron-log';
+// import { toJSON } from 'shared/utils';
 
 export type IpcSender = <T>(channel: string, payload?: any) => Promise<T>;
 
@@ -17,15 +17,15 @@ export type IpcStreamer = {
  * if the payload being sent over IPC contains a 'node' object, then replace it
  * with just the name of the node instead of the full object
  */
-const stripNode = (payload: any) => {
-  if (payload && payload.node) {
-    return {
-      ...payload,
-      node: payload.node.name,
-    };
-  }
-  return payload;
-};
+// const stripNode = (payload: any) => {
+//   if (payload && payload.node) {
+//     return {
+//       ...payload,
+//       node: payload.node.name,
+//     };
+//   }
+//   return payload;
+// };
 
 /**
  * A wrapper function to create an async function which sends messages over IPC and
@@ -47,14 +47,15 @@ export const createIpcSender = (serviceName: string, prefix: string) => {
 
     return new Promise((resolve, reject) => {
       ipcRenderer.once(uniqPayload.replyTo, (event: IpcRendererEvent, res: any) => {
-        debug(`${serviceName}: [response] "${uniqPayload.replyTo}"`, toJSON(res));
+        console.info('ipc send result:', res);
         if (res && res.err) {
           reject(new Error(res.err));
         } else {
           resolve(res);
         }
       });
-      debug(`${serviceName}: [request] "${reqChan}"`, toJSON(stripNode(uniqPayload)));
+      // debug(`${serviceName}: [request] "${reqChan}"`, toJSON(stripNode(uniqPayload)));
+      console.info('ipc send:', reqChan, uniqPayload);
       ipcRenderer.send(reqChan, uniqPayload);
     });
   };
@@ -75,17 +76,17 @@ export const createIpcStreamer = (serviceName: string, prefix: string): IpcStrea
     };
 
     // subscribe to the ipc channel and listen for the response
-    debug(`${serviceName}: [subscribe] "${subChan}"`);
+    // debug(`${serviceName}: [subscribe] "${subChan}"`);
     ipcRenderer.on(uniqPayload.replyTo, callback);
 
     // send the request to the main process
-    debug(`${serviceName}: [request] "${reqChan}"`, toJSON(stripNode(uniqPayload)));
+    // debug(`${serviceName}: [request] "${reqChan}"`, toJSON(stripNode(uniqPayload)));
     ipcRenderer.send(reqChan, uniqPayload);
   };
 
   const unsubscribe = (channel: string, callback: IpcStreamCallback) => {
     const subChan = `${prefix}-${channel}-stream`;
-    debug(`${serviceName}: [unsubscribe] "${subChan}"`);
+    // debug(`${serviceName}: [unsubscribe] "${subChan}"`);
     ipcRenderer.off(subChan, callback);
   };
 

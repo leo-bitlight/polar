@@ -30,8 +30,13 @@ const ActionsTab: React.FC<Props> = ({ node }) => {
       {node.status === Status.Started && (
         <>
           <Deposit node={node} />
+
+          {/* Open a bitcoin payment channel */}
           <OpenChannelButtons node={node} />
+
+          {/* Pay & Create bolt11 invoice */}
           <PaymentButtons node={node} />
+
           {node.implementation === 'litd' && (
             <>
               <SendAssetButton node={mapToTapd(node)} />

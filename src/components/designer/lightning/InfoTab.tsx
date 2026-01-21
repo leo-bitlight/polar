@@ -21,9 +21,13 @@ const InfoTab: React.FC<Props> = ({ node }) => {
   const { nodes } = useStoreState(s => s.lightning);
   const { nodes: tapNodes } = useStoreState(s => s.tap);
   const details: DetailValues = [
+    // Node Type
     { label: l('nodeType'), value: node.type },
+    // Implementation
     { label: l('implementation'), value: dockerConfigs[node.implementation]?.name },
+    // Version
     { label: l('version'), value: node.docker.image ? 'custom' : `v${node.version}` },
+    // Status
     {
       label: l('status'),
       value: (
@@ -39,6 +43,7 @@ const InfoTab: React.FC<Props> = ({ node }) => {
     details.splice(3, 0, { label: l('customImage'), value: node.docker.image });
   }
 
+  // btc 余额等其他 info
   let showSyncWarning = false;
   const nodeState = nodes[node.name];
   if (node.status === Status.Started && nodeState) {
@@ -109,6 +114,7 @@ const InfoTab: React.FC<Props> = ({ node }) => {
         />
       )}
       <DetailsList details={details} />
+      {/* 资产信息 */}
       {balances && <AssetsList balances={balances} nodeName={node.name} />}
     </>
   );

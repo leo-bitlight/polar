@@ -1,5 +1,5 @@
 import { app, BrowserWindow, IpcMain } from 'electron';
-import { debug } from 'electron-log';
+// import { debug } from 'electron-log';
 import windowState from 'electron-window-state';
 import { join } from 'path';
 import { ipcChannels } from '../src/shared';
@@ -11,7 +11,7 @@ import { clearTapdProxyCache } from './tapd/tapdProxyServer';
 import { unzip, zip } from './utils/zip';
 
 const openWindow = async (args: { url: string }): Promise<boolean> => {
-  debug('openWindow', args);
+  // debug('openWindow', args);
   const winState = windowState({
     defaultWidth: 800,
     defaultHeight: 600,
@@ -72,21 +72,26 @@ const listeners: {
   [ipcChannels.unzip]: unzip,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const log = (..._args: any[]) => {
+  // console.info(..._args);
+};
+
 /**
  * Sets up the IPC listeners for the main process and maps them to async
  * functions.
  * @param ipc the IPC object of the main process
  */
 export const initAppIpcListener = (ipc: IpcMain) => {
-  const log = (msg: string, ...rest: any[]) => debug(`AppIpcListener: ${msg}`, ...rest);
   Object.entries(listeners).forEach(([channel, func]) => {
     const requestChan = `app-${channel}-request`;
     const responseChan = `app-${channel}-response`;
 
-    log(`listening for ipc command "${channel}"`);
+    // log(`listening for ipc command "${channel}"`);
     ipc.on(requestChan, async (event, ...args) => {
       // the a message is received by the main process...
-      log(`received request "${requestChan}"`, JSON.stringify(args, null, 2));
+      log(`received request "${requestChan}"`, JSON.stringify(args));
+
       // inspect the first arg to see if it has a specific channel to reply to
       let uniqueChan = responseChan;
       if (args && args[0] && args[0].replyTo) {
@@ -96,12 +101,12 @@ export const initAppIpcListener = (ipc: IpcMain) => {
         // attempt to execute the associated function
         const result = await func(...args);
         // merge the result with default values since LND omits falsey values
-        log(`send response "${uniqueChan}"`, JSON.stringify(result, null, 2));
+        log(result);
         // response to the calling process with a reply
         event.reply(uniqueChan, result);
       } catch (err: any) {
         // reply with an error message if the execution fails
-        log(`send error "${uniqueChan}"`, JSON.stringify(err, null, 2));
+        log(err);
         event.reply(uniqueChan, { err: err.message });
       }
     });

@@ -40,6 +40,7 @@ const LightningDetails: React.FC<Props> = ({ node }) => {
     [node],
   );
 
+  // sidebar 名字 & 余额
   let extra: ReactNode | undefined;
   const { nodes } = useStoreState(s => s.lightning);
   const nodeState = nodes[node.name];
@@ -60,6 +61,7 @@ const LightningDetails: React.FC<Props> = ({ node }) => {
     connect: <ConnectTab node={node} />,
     actions: <ActionsTab node={node} />,
   };
+
   return (
     <SidebarCard
       title={node.name}
