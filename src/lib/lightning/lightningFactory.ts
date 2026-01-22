@@ -3,7 +3,7 @@ import { clightningService } from 'lib/lightning/clightning';
 import { eclairService } from 'lib/lightning/eclair';
 import { lndService } from 'lib/lightning/lnd';
 import { LightningService } from 'types';
-import RustLightningService from './rlightning/rlightningService';
+import RustLightningService from './rustlightning/rlightningService';
 
 /**
  * A factory class used to obtain a Lightning service based on

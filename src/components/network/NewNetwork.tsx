@@ -20,7 +20,7 @@ import { ThemeColors } from 'theme/colors';
 import { dockerConfigs } from 'utils/constants';
 import { isWindows } from 'utils/system';
 import { HOME } from 'components/routing';
-import RustLightningService from 'lib/lightning/rlightning/rlightningService';
+import RustLightningService from 'lib/lightning/rustlightning/rlightningService';
 
 const Styled = {
   PageHeader: styled(PageHeader)<{ colors: ThemeColors['pageHeader'] }>`
